@@ -1,0 +1,464 @@
+/* Навигационная панель */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-weight: 600;
+    color: #4e73df !important;
+    font-size: 1.5rem;
+}
+
+/* Основные стили */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Карточки задач */
+.task-card {
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.task-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.task-card .card {
+    border: none;
+    border-radius: 8px;
+}
+
+.task-card .card-header {
+    background-color: #fff;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding: 15px 20px;
+}
+
+.task-card .card-body {
+    padding: 20px;
+    background-color: #fff;
+}
+
+.task-card .card-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid rgba(0,0,0,0.05);
+    font-size: 0.9em;
+    color: #6c757d;
+}
+
+/* Завершенные задачи */
+.task-card.completed .card-header {
+    background-color: #f8f9fa;
+}
+
+/* Приоритеты */
+.task-card.high-priority {
+    border-left: 4px solid #dc3545;
+}
+
+.task-card.medium-priority {
+    border-left: 4px solid #ffc107;
+}
+
+.task-card.low-priority {
+    border-left: 4px solid #28a745;
+}
+
+/* Кнопки */
+.btn {
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.btn-primary {
+    background-color: #4e73df;
+    border-color: #4e73df;
+}
+
+.btn-success {
+    background-color: #1cc88a;
+    border-color: #1cc88a;
+}
+
+.btn-outline-secondary {
+    border-color: #d1d3e2;
+}
+
+/* Бейджи */
+.badge {
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 0.8em;
+}
+
+/* Формы */
+.form-control {
+    border-radius: 8px;
+    padding: 10px 15px;
+    border: 1px solid #d1d3e2;
+}
+
+.form-control:focus {
+    border-color: #bac8f3;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+/* Комментарии */
+.comments-container {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.comments-container .card {
+    border: none;
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 10px;
+}
+
+/* Теги */
+.keyword-badge {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    border-radius: 12px;
+    padding: 4px 10px;
+    font-size: 0.8em;
+    margin-right: 5px;
+    display: inline-block;
+}
+
+/* Заголовки */
+h1, h2, h3, h4, h5, h6 {
+    color: #2e3a4d;
+    font-weight: 600;
+}
+
+h1 {
+    margin-bottom: 30px;
+    font-size: 2rem;
+}
+
+/* Алерты */
+.alert {
+    border-radius: 8px;
+    padding: 15px;
+}
+
+/* Сайдбар выполненных задач */
+.completed-tasks {
+    background-color: #fff;
+    box-shadow: -2px 0 10px rgba(0,0,0,0.05);
+    padding: 20px;
+    border-radius: 8px 0 0 8px;
+}
+
+
+
+.toggle-completed {
+    background-color: #4e73df;
+    color: white;
+    border-radius: 50px;
+    padding: 10px 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Выполненные задачи */
+.completed-task-item {
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.task-card {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    .task-card .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 992px) {
+    .sidebar-sticky {
+        position: static;
+        height: auto;
+        margin-top: 30px;
+    }
+}
+
+/* Стили для выпадающих форм */
+.collapsible {
+    transition: all 0.3s;
+}
+
+.collapsible:hover {
+    transform: translateY(-2px);
+}
+
+.collapsible[aria-expanded="true"] i {
+    transform: rotate(45deg);
+}
+
+/* Стили для тегов */
+.tag-list {
+    display: flex;
+    flex-direction: row;
+    max-height: 200px;
+    overflow-y: auto;
+    flex-wrap: wrap;
+}
+
+.tag-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+span.tag-badge {
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 500;
+    background-color: #ff0000;
+    border-radius: 10%;
+    padding: 5px;
+}
+
+.tag-delete-btn {
+    background: none;
+    border: none;
+    color: #dc3545;
+    opacity: 0.5;
+    transition: all 0.2s;
+}
+
+.tag-delete-btn:hover {
+    opacity: 1;
+}
+
+/* Анимация выпадающих элементов */
+.collapse {
+    transition: all 0.3s ease;
+}
+
+/* Иконки */
+.fas {
+    transition: transform 0.2s;
+}
+
+/* Sidebar */
+
+.sidebar-sticky {
+    position: sticky;
+    top: 20px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.05);
+    height: calc(100vh - 40px);
+    overflow-y: auto;
+}
+
+.sidebar-header {
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 15px;
+}
+
+.sidebar-header h5 {
+    font-weight: 600;
+    color: #4e73df;
+}
+
+.sidebar-item {
+    margin-bottom: 15px;
+}
+
+.sidebar-btn {
+    width: 100%;
+    text-align: left;
+    padding: 10px 15px;
+    border: none;
+    background: #f8f9fa;
+    border-radius: 8px;
+    color: #333;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.sidebar-btn:hover {
+    background: #e9ecef;
+    color: #4e73df;
+}
+
+.sidebar-btn[aria-expanded="true"] {
+    background: #4e73df;
+    color: white;
+}
+
+/* Стили для ключевых слов */
+/* Подсветка ключевых слов при наведении */
+.keyword-highlight {
+    background-color: #fff59d;
+    padding: 0 2px;
+    border-radius: 2px;
+    font-weight: bold;
+}
+
+.keyword-badge {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.keyword-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Анимация для кликабельных элементов */
+.keyword-badge:active {
+    transform: translateY(0);
+}
+
+.keyword-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    background-color: #e3f2fd;
+    color: #1976d2;
+    border-radius: 15px;
+    font-size: 0.8em;
+    font-weight: 500;
+    margin: 2px;
+    transition: all 0.2s;
+}
+
+.keyword-badge:hover {
+    background-color: #bbdefb;
+    transform: translateY(-1px);
+}
+
+.keyword-badge-sm {
+    display: inline-block;
+    padding: 2px 6px;
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+    border-radius: 10px;
+    font-size: 0.7em;
+    margin: 1px;
+}
+
+/* Стили для подсказок источников ключевых слов */
+.keyword-source-tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+    margin-left: 4px;
+}
+
+.keyword-source-tooltip .fas {
+    font-size: 0.7em;
+    color: #78909c;
+}
+
+.keyword-source-content {
+    visibility: hidden;
+    width: 180px;
+    background-color: #37474f;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1000;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -90px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.keyword-source-tooltip:hover .keyword-source-content {
+    visibility: visible;
+    opacity: 1;
+}
+
+.keyword-source-content::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #37474f transparent transparent transparent;
+}
+
+/* Анимация появления ключевых слов */
+@keyframes keywordFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.keyword-badge {
+    animation: keywordFadeIn 0.3s ease-out;
+}
+
+/* Адаптивность для ключевых слов */
+@media (max-width: 768px) {
+    .keyword-badge {
+        font-size: 0.75em;
+        padding: 3px 8px;
+    }
+
+    .keyword-source-content {
+        width: 150px;
+        margin-left: -75px;
+        font-size: 10px;
+    }
+}

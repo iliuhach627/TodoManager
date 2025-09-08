@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Управление ключевыми словами</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .keyword-badge {
+            background: linear-gradient(45deg, #4e73df, #224abe);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-light bg-light shadow-sm mb-4">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold text-primary" href="/tasks">
+            <i class="fas fa-tasks me-2"></i>Task Manager
+        </a>
+        <div>
+            <a th:href="@{/tasks}" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-1"></i>Назад к задачам
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <!-- Сообщения -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show">
+        <i class="fas fa-check-circle me-2"></i>
+        <span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        <span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div th:if="${infoMessage}" class="alert alert-info alert-dismissible fade show">
+        <i class="fas fa-info-circle me-2"></i>
+        <span th:text="${infoMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <h2 class="mb-4"><i class="fas fa-key me-2"></i>Управление ключевыми словами</h2>
+
+    <!-- Статистика -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-database fa-2x text-primary me-3"></i>
+                        <div>
+                            <h4 class="mb-0" th:text="${keywordCount}">0</h4>
+                            <small class="text-muted">Всего ключевых слов в БД</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <form th:action="@{/keywords/reload}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-secondary">
+                            <i class="fas fa-sync-alt me-1"></i>Перезагрузить
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Форма добавления -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Добавить новое ключевое слово</h5>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/keywords/add}" method="post">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="newKeyword"
+                           placeholder="Введите новое ключевое слово" required
+                           maxlength="255">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save me-1"></i>Сохранить в БД
+                    </button>
+                </div>
+                <small class="text-muted">Ключевое слово будет сохранено в базе данных PostgreSQL</small>
+            </form>
+        </div>
+    </div>
+
+    <!-- Список ключевых слов -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-list me-2"></i>Ключевые слова в базе данных
+                <span class="badge bg-primary ms-2" th:text="${keywordCount}"></span>
+            </h5>
+        </div>
+        <div class="card-body">
+            <div th:if="${#sets.isEmpty(keywords)}" class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                В базе данных нет ключевых слов. Добавьте первые ключевые слова через форму выше.
+            </div>
+
+            <div class="row">
+                <div th:each="keyword : ${keywords}" class="col-md-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                        <span class="keyword-badge" th:text="${keyword}"></span>
+                        <form th:action="@{/keywords/delete}" method="post">
+                            <input type="hidden" name="keyword" th:value="${keyword}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                    onclick="return confirm('Удалить ключевое слово \'' + $(this).closest('form').find('input').val() + '\'?')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
