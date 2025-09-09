@@ -435,24 +435,23 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const searchCard = document.getElementById('searchCard');
         const searchButton = document.querySelector('.collapsible-search-btn');
 
         // Восстановление состояния из localStorage
         const isSearchOpen = localStorage.getItem('searchOpen') === 'true';
         if (isSearchOpen) {
-            const bsCollapse = new bootstrap.Collapse(searchCard, { toggle: false });
+            const bsCollapse = new bootstrap.Collapse(searchButton, { toggle: false });
             bsCollapse.show();
             updateButtonText(true);
         }
 
         // Обработчики событий
-        searchCard.addEventListener('show.bs.collapse', function() {
+        searchButton.addEventListener('show.bs.collapse', function() {
             localStorage.setItem('searchOpen', 'true');
             updateButtonText(true);
         });
 
-        searchCard.addEventListener('hide.bs.collapse', function() {
+        searchButton.addEventListener('hide.bs.collapse', function() {
             localStorage.setItem('searchOpen', 'false');
             updateButtonText(false);
         });
@@ -464,7 +463,7 @@
 
         if (hasSearch) {
             setTimeout(() => {
-                const bsCollapse = new bootstrap.Collapse(searchCard);
+                const bsCollapse = new bootstrap.Collapse(searchButton);
                 bsCollapse.show();
             }, 100);
         }
