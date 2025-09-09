@@ -116,7 +116,7 @@
                 <h5 class="text-primary"><i class="fas fa-key me-2"></i>Ключевые слова</h5>
                 <div class="d-flex flex-wrap gap-2">
                     <th:block th:each="entry : ${keywordsWithSource}">
-            <span class="keyword-badge position-relative">
+            <span class="keyword-badge position-relative" th:attr="data-keyword=${entry.key}">
                 <span th:text="${entry.key}"></span>
                 <span class="keyword-source-tooltip">
                     <i class="fas fa-info-circle ms-1"></i>
@@ -294,6 +294,11 @@
         marks.forEach(mark => {
             mark.outerHTML = mark.textContent;
         });
+    }
+
+    function searchByKeyword(keyword) {
+        // Перенаправить на поиск по ключевому слову
+        window.location.href = `/tasks/search?keyword=${encodeURIComponent(keyword)}`;
     }
 </script>
 </body>

@@ -462,3 +462,42 @@ span.tag-badge {
         font-size: 10px;
     }
 }
+
+.collapsible-search-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.collapsible-search-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.collapsible-search-btn[aria-expanded="true"] {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.collapsible-search-btn[aria-expanded="true"] .search-arrow {
+    transform: rotate(180deg);
+}
+
+.search-arrow {
+    transition: transform 0.3s ease;
+    font-size: 0.9em;
+}
+
+#searchCard {
+    transition: all 0.3s ease;
+}
+
+.card-header .btn-close {
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+}
+
+.card-header .btn-close:hover {
+    opacity: 1;
+}

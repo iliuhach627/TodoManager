@@ -31,9 +31,32 @@
         <!-- Основной контент -->
         <div class="col-lg-9 mb-4">
             <!-- Форма поиска -->
-            <div class="card mb-4">
-                <div class="card-header bg-white">
-                    <h5 class="mb-0"><i class="fas fa-search me-2"></i>Поиск и фильтрация задач</h5>
+            <!-- Кнопка показа/скрытия поиска -->
+            <div class="mb-3">
+                <button class="btn btn-primary collapsible-search-btn" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#searchCard" aria-expanded="false"
+                        th:attr="aria-expanded=${searchKeyword != null or (selectedTagIds != null and not #lists.isEmpty(selectedTagIds))} ? 'true' : 'false'">
+                    <i class="fas fa-search me-2"></i>
+                    <span class="search-btn-text">
+            <th:block th:if="${searchKeyword != null or (selectedTagIds != null and not #lists.isEmpty(selectedTagIds))}">
+                Скрыть поиск и фильтры
+            </th:block>
+            <th:block th:unless="${searchKeyword != null or (selectedTagIds != null and not #lists.isEmpty(selectedTagIds))}">
+                Показать поиск и фильтры
+            </th:block>
+        </span>
+                    <i class="fas ms-2 search-arrow"
+                       th:classappend="${searchKeyword != null or (selectedTagIds != null and not #lists.isEmpty(selectedTagIds))} ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                </button>
+            </div>
+
+            <!-- Карточка поиска -->
+            <div class="card mb-4 collapse" id="searchCard"
+                 th:classappend="${searchKeyword != null or (selectedTagIds != null and not #lists.isEmpty(selectedTagIds))} ? 'show' : ''">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Поиск и фильтрация задач</h5>
+                    <button type="button" class="btn-close" data-bs-target="#searchCard" data-bs-toggle="collapse"
+                            aria-label="Закрыть"></button>
                 </div>
                 <div class="card-body">
                     <form th:action="@{/tasks/search}" method="get" class="row g-3">
@@ -408,6 +431,55 @@
         // Перенаправить на поиск по ключевому слову
         window.location.href = `/tasks/search?keyword=${encodeURIComponent(keyword)}`;
     }
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchCard = document.getElementById('searchCard');
+        const searchButton = document.querySelector('.collapsible-search-btn');
+
+        // Восстановление состояния из localStorage
+        const isSearchOpen = localStorage.getItem('searchOpen') === 'true';
+        if (isSearchOpen) {
+            const bsCollapse = new bootstrap.Collapse(searchCard, { toggle: false });
+            bsCollapse.show();
+            updateButtonText(true);
+        }
+
+        // Обработчики событий
+        searchCard.addEventListener('show.bs.collapse', function() {
+            localStorage.setItem('searchOpen', 'true');
+            updateButtonText(true);
+        });
+
+        searchCard.addEventListener('hide.bs.collapse', function() {
+            localStorage.setItem('searchOpen', 'false');
+            updateButtonText(false);
+        });
+
+        // Автоматическое открытие при поиске
+        const hasSearch = window.location.search.includes('keyword=') ||
+            window.location.search.includes('tagIds=') ||
+            window.location.pathname.includes('/filter/tag/');
+
+        if (hasSearch) {
+            setTimeout(() => {
+                const bsCollapse = new bootstrap.Collapse(searchCard);
+                bsCollapse.show();
+            }, 100);
+        }
+
+        function updateButtonText(isOpen) {
+            const textElement = document.querySelector('.search-btn-text');
+            const arrow = document.querySelector('.search-arrow');
+
+            if (isOpen) {
+                textElement.textContent = 'Скрыть поиск и фильтры';
+            } else {
+                textElement.textContent = 'Показать поиск и фильтры';
+            }
+        }
+    });
 </script>
 </body>
 </html>
