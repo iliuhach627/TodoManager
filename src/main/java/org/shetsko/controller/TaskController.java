@@ -221,24 +221,24 @@ public class TaskController {
         return "tasks/list";
     }
 
-    @GetMapping("/keywords")
-    public String manageKeywords(Model model) {
-        model.addAttribute("keywords", keywordService.getAllKeywords());
-        model.addAttribute("newKeyword", "");
-        return "tasks/keywords";
-    }
-
-    @PostMapping("/keywords/add")
-    public String addKeyword(@RequestParam String newKeyword) {
-        keywordService.addKeyword(newKeyword);
-        return "redirect:/tasks/keywords";
-    }
-
-    @PostMapping("/keywords/delete")
-    public String deleteKeyword(@RequestParam String keyword) {
-        keywordService.removeKeyword(keyword);
-        return "redirect:/tasks/keywords";
-    }
+//    @GetMapping("/keywords")
+//    public String manageKeywords(Model model) {
+//        model.addAttribute("keywords", keywordService.getAllKeywords());
+//        model.addAttribute("newKeyword", "");
+//        return "tasks/manage";
+//    }
+//
+//    @PostMapping("/keywords/add")
+//    public String addKeyword(@RequestParam String newKeyword) {
+//        keywordService.addKeyword(newKeyword);
+//        return "redirect:/tasks/keywords";
+//    }
+//
+//    @PostMapping("/keywords/delete")
+//    public String deleteKeyword(@RequestParam String keyword) {
+//        keywordService.removeKeyword(keyword);
+//        return "redirect:/tasks/keywords";
+//    }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public String handleNotFound(ResourceNotFoundException ex, Model model) {

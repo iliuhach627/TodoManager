@@ -79,7 +79,7 @@
                               th:classappend="${task.priority == T(org.shetsko.model.enums.Priority).HIGH} ? 'bg-danger' :
                                             (${task.priority == T(org.shetsko.model.enums.Priority).MEDIUM} ? 'bg-warning' : 'bg-success')"
                               th:text="${task.priority.getTranslate()}"></span>
-                        <small class="text-white-50">
+                        <small class="text-black-50">
                             <i class="far fa-calendar-alt me-1"></i>
                             Создано: <span th:text="${#temporals.format(task.createdAt, 'dd.MM.yyyy HH:mm')}"></span>
                         </small>
