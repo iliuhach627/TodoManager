@@ -225,6 +225,27 @@ public class TaskController {
         return "tasks/list";
     }
 
+    @GetMapping("/filter/date/custom")
+    public String filterTasksByDateRange(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+                                         Model model) {
+
+        if (startDate == null) startDate = LocalDate.now().minusMonths(1);
+        if (endDate == null) endDate = LocalDate.now();
+
+        // Добавляем 1 день к endDate чтобы включить весь последний день
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay();
+
+        List<Task> foundTasks = taskService.findTasksByCreatedAndBetween(startDateTime, endDateTime);
+
+        // Форматируем даты для отображения
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        String dateFilter = startDate.format(formatter) + " - " + endDate.format(formatter);
+
+        return setupSearchResults(model, foundTasks, null, null, dateFilter, startDate, endDate);
+    }
+
     @GetMapping("/filter/date")
     public String filterTasksByDate(@RequestParam(required = false) String dateRange,
                                     @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate customDate,
@@ -258,10 +279,17 @@ public class TaskController {
             }
         }
 
-        List<Task> foundTasks = taskService.findTasksByCreatedAndBetween(
-                startDate.atStartOfDay(),
-                endDate.plusDays(1).atStartOfDay()
-        );
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay();
+
+        List<Task> foundTasks = taskService.findTasksByCreatedAndBetween(startDateTime, endDateTime);
+
+        return setupSearchResults(model, foundTasks, null, null, dateFilter, startDate, endDate);
+    }
+
+    private String setupSearchResults(Model model, List<Task> foundTasks,
+                                      String searchKeyword, List<Long> selectedTagIds,
+                                      String dateFilter, LocalDate startDate, LocalDate endDate) {
 
         // Разделяем на активные и выполненные
         List<Task> activeFoundTasks = foundTasks.stream()
@@ -278,7 +306,11 @@ public class TaskController {
         model.addAttribute("newTask", new Task());
         model.addAttribute("newTag", new Tag());
         model.addAttribute("allTags", taskService.getAllTags());
+        model.addAttribute("searchKeyword", searchKeyword);
+        model.addAttribute("selectedTagIds", selectedTagIds != null ? selectedTagIds : Collections.emptyList());
         model.addAttribute("dateFilter", dateFilter);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
         model.addAttribute("searchResultsCount", foundTasks.size());
         model.addAttribute("activeResultsCount", activeFoundTasks.size());
         model.addAttribute("completedResultsCount", completedFoundTasks.size());

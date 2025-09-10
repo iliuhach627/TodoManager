@@ -1,0 +1,140 @@
+/* Стили для ключевых слов */
+/* Подсветка ключевых слов при наведении */
+.keyword-highlight {
+    background-color: #fff59d;
+    padding: 0 2px;
+    border-radius: 2px;
+    font-weight: bold;
+}
+
+.keyword-badge {
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.keyword-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Анимация для кликабельных элементов */
+.keyword-badge:active {
+    transform: translateY(0);
+}
+
+/* Теги */
+.keyword-badge {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    border-radius: 12px;
+    padding: 4px 10px;
+    font-size: 0.8em;
+    margin-right: 5px;
+    display: inline-block;
+}
+
+.keyword-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    background-color: #e3f2fd;
+    color: #1976d2;
+    border-radius: 15px;
+    font-size: 0.8em;
+    font-weight: 500;
+    margin: 2px;
+    transition: all 0.2s;
+}
+
+.keyword-badge:hover {
+    background-color: #bbdefb;
+    transform: translateY(-1px);
+}
+
+.keyword-badge-sm {
+    display: inline-block;
+    padding: 2px 6px;
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+    border-radius: 10px;
+    font-size: 0.7em;
+    margin: 1px;
+}
+
+/* Стили для подсказок источников ключевых слов */
+.keyword-source-tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+    margin-left: 4px;
+}
+
+.keyword-source-tooltip .fas {
+    font-size: 0.7em;
+    color: #78909c;
+}
+
+.keyword-source-content {
+    visibility: hidden;
+    width: 180px;
+    background-color: #37474f;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1000;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -90px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.keyword-source-tooltip:hover .keyword-source-content {
+    visibility: visible;
+    opacity: 1;
+}
+
+.keyword-source-content::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #37474f transparent transparent transparent;
+}
+
+/* Анимация появления ключевых слов */
+@keyframes keywordFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.keyword-badge {
+    animation: keywordFadeIn 0.3s ease-out;
+}
+
+/* Адаптивность для ключевых слов */
+@media (max-width: 768px) {
+    .keyword-badge {
+        font-size: 0.75em;
+        padding: 3px 8px;
+    }
+
+    .keyword-source-content {
+        width: 150px;
+        margin-left: -75px;
+        font-size: 10px;
+    }
+}

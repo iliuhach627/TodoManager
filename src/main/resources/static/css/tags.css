@@ -1,0 +1,40 @@
+/* Стили для тегов */
+.tag-list {
+    display: flex;
+    flex-direction: row;
+    max-height: 200px;
+    overflow-y: auto;
+    flex-wrap: wrap;
+}
+
+.tag-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+
+span.tag-badge {
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 500;
+    background-color: #ff0000;
+    border-radius: 10%;
+    padding: 5px;
+}
+
+.tag-delete-btn {
+    background: none;
+    border: none;
+    color: #dc3545;
+    opacity: 0.5;
+    transition: all 0.2s;
+}
+
+.tag-delete-btn:hover {
+    opacity: 1;
+}
+

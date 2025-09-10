@@ -1,0 +1,45 @@
+/* Карточки задач */
+.task-card {
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.task-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.task-card .card {
+    border: none;
+    border-radius: 8px;
+}
+
+.task-card .card-header {
+    background-color: #fff;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding: 15px 20px;
+}
+
+.task-card .card-body {
+    padding: 20px;
+    background-color: #fff;
+}
+
+.task-card .card-footer {
+    background-color: #f8f9fa;
+    border-top: 1px solid rgba(0,0,0,0.05);
+    font-size: 0.9em;
+    color: #6c757d;
+}
+
+/* Завершенные задачи */
+.task-card.completed .card-header {
+    background-color: #f8f9fa;
+}
+
+.priority-high { border-left: 3px solid #dc3545; }
+.priority-medium { border-left: 3px solid #ffc107; }
+.priority-low { border-left: 3px solid #28a745; }
