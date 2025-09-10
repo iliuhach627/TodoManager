@@ -146,6 +146,10 @@ body {
     display: inline-block;
 }
 
+.priority-high { border-left: 3px solid #dc3545; }
+.priority-medium { border-left: 3px solid #ffc107; }
+.priority-low { border-left: 3px solid #28a745; }
+
 /* Заголовки */
 h1, h2, h3, h4, h5, h6 {
     color: #2e3a4d;

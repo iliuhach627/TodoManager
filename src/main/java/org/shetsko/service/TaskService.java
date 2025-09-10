@@ -101,6 +101,13 @@ public class TaskService {
                 .collect(Collectors.toList());
     }
 
+    public List<Task> findTasksByCreatedAndBetween(LocalDateTime start, LocalDateTime end) {
+        return taskRepository.findByCreatedAtBetween(
+                start,
+                end
+        );
+    }
+
     private boolean containsKeyword(Task task, String keyword) {
         // Поиск в заголовке
         if (task.getCustomId() != null && task.getCustomId().contains(keyword)) {

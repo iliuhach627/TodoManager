@@ -20,12 +20,9 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findByStatus(TaskStatus status);
     List<Task> findByStatusNot(TaskStatus status);
 
-    @Query("SELECT t FROM Task t WHERE t.createdAt BETWEEN :start AND :end")
+    @Query("SELECT t FROM Task t WHERE t.createdAt BETWEEN :start AND :end ORDER BY t.createdAt DESC")
     List<Task> findByCreatedAtBetween(@Param("start") LocalDateTime start,
                                       @Param("end") LocalDateTime end);
-
-//    @Query("SELECT t FROM Task t JOIN t.tags tag WHERE tag.name = :tagName")
-//    List<Task> findByTagName(@Param("tagName") String tagName);
 
     @Query("SELECT t FROM Task t WHERE LOWER(t.description) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Task> findByKeyword(@Param("keyword") String keyword);

@@ -6,10 +6,14 @@ import org.shetsko.model.*;
 import org.shetsko.model.enums.TaskStatus;
 import org.shetsko.service.KeywordService;
 import org.shetsko.service.TaskService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -221,24 +225,66 @@ public class TaskController {
         return "tasks/list";
     }
 
-//    @GetMapping("/keywords")
-//    public String manageKeywords(Model model) {
-//        model.addAttribute("keywords", keywordService.getAllKeywords());
-//        model.addAttribute("newKeyword", "");
-//        return "tasks/manage";
-//    }
-//
-//    @PostMapping("/keywords/add")
-//    public String addKeyword(@RequestParam String newKeyword) {
-//        keywordService.addKeyword(newKeyword);
-//        return "redirect:/tasks/keywords";
-//    }
-//
-//    @PostMapping("/keywords/delete")
-//    public String deleteKeyword(@RequestParam String keyword) {
-//        keywordService.removeKeyword(keyword);
-//        return "redirect:/tasks/keywords";
-//    }
+    @GetMapping("/filter/date")
+    public String filterTasksByDate(@RequestParam(required = false) String dateRange,
+                                    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate customDate,
+                                    Model model) {
+
+        LocalDate startDate;
+        LocalDate endDate = LocalDate.now();
+        String dateFilter = "";
+
+        if (customDate != null) {
+            startDate = customDate;
+            endDate = customDate;
+            dateFilter = customDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        } else {
+            switch (dateRange) {
+                case "today":
+                    startDate = endDate;
+                    dateFilter = "Сегодня";
+                    break;
+                case "week":
+                    startDate = endDate.minusWeeks(1);
+                    dateFilter = "Неделя";
+                    break;
+                case "month":
+                    startDate = endDate.minusMonths(1);
+                    dateFilter = "Месяц";
+                    break;
+                default:
+                    startDate = endDate.minusMonths(1);
+                    dateFilter = "Месяц";
+            }
+        }
+
+        List<Task> foundTasks = taskService.findTasksByCreatedAndBetween(
+                startDate.atStartOfDay(),
+                endDate.plusDays(1).atStartOfDay()
+        );
+
+        // Разделяем на активные и выполненные
+        List<Task> activeFoundTasks = foundTasks.stream()
+                .filter(task -> task.getStatus() != TaskStatus.COMPLETED)
+                .collect(Collectors.toList());
+
+        List<Task> completedFoundTasks = foundTasks.stream()
+                .filter(task -> task.getStatus() == TaskStatus.COMPLETED)
+                .collect(Collectors.toList());
+
+        model.addAttribute("activeTasks", activeFoundTasks);
+        model.addAttribute("completedTasks", completedFoundTasks);
+        model.addAttribute("keywordService", keywordService);
+        model.addAttribute("newTask", new Task());
+        model.addAttribute("newTag", new Tag());
+        model.addAttribute("allTags", taskService.getAllTags());
+        model.addAttribute("dateFilter", dateFilter);
+        model.addAttribute("searchResultsCount", foundTasks.size());
+        model.addAttribute("activeResultsCount", activeFoundTasks.size());
+        model.addAttribute("completedResultsCount", completedFoundTasks.size());
+
+        return "tasks/list";
+    }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public String handleNotFound(ResourceNotFoundException ex, Model model) {
