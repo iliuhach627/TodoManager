@@ -192,6 +192,12 @@
                                           class="ms-1" th:text="${#lists.size(task.comments)}"></span>
                                 </button>
 
+                                <form th:action="@{'/tasks/delete/' + ${task.customId}}" method="post" class="ms-2">
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+
                                 <!-- Кнопка завершения -->
                                 <form th:if="${task.status != T(org.shetsko.model.enums.TaskStatus).COMPLETED}"
                                       th:action="@{/tasks/{id}/complete(id=${task.customId})}"
@@ -299,6 +305,11 @@
                                               class="ms-1" th:text="${#lists.size(task.comments)}"></span>
                                     </button>
                                 </div>
+                                <form th:action="@{'/tasks/delete/' + ${task.customId}}" method="post" class="ms-2">
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
                             </div>
                         </div>
                         <!-- Описание задачи -->

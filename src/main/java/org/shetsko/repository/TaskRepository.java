@@ -17,15 +17,34 @@ import java.util.Optional;
 public interface TaskRepository extends JpaRepository<Task, Long> {
     Optional<Task> findByCustomId(String customId);
 
-    List<Task> findByStatus(TaskStatus status);
-    List<Task> findByStatusNot(TaskStatus status);
-
     @Query("SELECT t FROM Task t WHERE t.createdAt BETWEEN :start AND :end ORDER BY t.createdAt DESC")
     List<Task> findByCreatedAtBetween(@Param("start") LocalDateTime start,
                                       @Param("end") LocalDateTime end);
 
-    @Query("SELECT t FROM Task t WHERE LOWER(t.description) LIKE LOWER(CONCAT('%', :keyword, '%'))")
-    List<Task> findByKeyword(@Param("keyword") String keyword);
+    // Активные задачи - новые сверху
+    @Query("SELECT t FROM Task t WHERE t.status != 'COMPLETED' ORDER BY t.createdAt DESC")
+    List<Task> findActiveTasksOrderByCreatedAtDesc();
+
+    // Выполненные задачи - новые сверху
+    @Query("SELECT t FROM Task t WHERE t.status = 'COMPLETED' ORDER BY t.createdAt DESC")
+    List<Task> findCompletedTasksOrderByCreatedAtDesc();
+
+    // Все задачи - новые сверху
+    @Query("SELECT t FROM Task t ORDER BY t.createdAt DESC")
+    List<Task> findAllOrderByCreatedAtDesc();
+
+    // Поиск с сортировкой - новые сверху
+    @Query("SELECT t FROM Task t WHERE LOWER(t.description) LIKE LOWER(CONCAT('%', :keyword, '%')) ORDER BY t.createdAt DESC")
+    List<Task> findByKeywordOrderByCreatedAtDesc(@Param("keyword") String keyword);
+
+    // Фильтр по тегам с сортировкой - новые сверху
+    @Query("SELECT DISTINCT t FROM Task t JOIN t.tags tag WHERE tag.id IN :tagIds ORDER BY t.createdAt DESC")
+    List<Task> findByTagsIdInOrderByCreatedAtDesc(@Param("tagIds") List<Long> tagIds);
+
+    // Фильтр по дате с сортировкой - новые сверху
+    @Query("SELECT t FROM Task t WHERE t.createdAt BETWEEN :start AND :end ORDER BY t.createdAt DESC")
+    List<Task> findByCreatedAtBetweenOrderByCreatedAtDesc(@Param("start") LocalDateTime start,
+                                                           @Param("end") LocalDateTime end);
 
     long countByCreatedAtBetween(LocalDateTime localDateTime, LocalDateTime localDateTime1);
 

@@ -57,6 +57,12 @@ public class TaskController {
         return "redirect:/tasks";
     }
 
+    @PostMapping("/delete/{customId}")
+    public String deleteTask(@PathVariable String customId) {
+        taskService.deleteTask(customId);
+        return "redirect:/tasks";
+    }
+
     @GetMapping("/{customId}")
     public String getTask(@PathVariable String customId, Model model) {
         Task task = taskService.getTask(customId)

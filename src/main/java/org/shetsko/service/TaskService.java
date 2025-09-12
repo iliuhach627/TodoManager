@@ -56,15 +56,15 @@ public class TaskService {
     }
 
     public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+        return taskRepository.findAllOrderByCreatedAtDesc();
     }
 
     public List<Task> getActiveTasks() {
-        return taskRepository.findByStatusNot(TaskStatus.COMPLETED);
+        return taskRepository.findActiveTasksOrderByCreatedAtDesc();
     }
 
     public List<Task> getCompletedTasks() {
-        return taskRepository.findByStatus(TaskStatus.COMPLETED);
+        return taskRepository.findCompletedTasksOrderByCreatedAtDesc();
     }
 
     public Task updateTask(String customId, Task taskDetails) {
@@ -96,16 +96,11 @@ public class TaskService {
         }
 
         String searchTerm = keyword.toLowerCase().trim();
-        return taskRepository.findAll().stream()
-                .filter(task -> containsKeyword(task, searchTerm))
-                .collect(Collectors.toList());
+        return taskRepository.findByKeywordOrderByCreatedAtDesc(keyword.trim());
     }
 
     public List<Task> findTasksByCreatedAndBetween(LocalDateTime start, LocalDateTime end) {
-        return taskRepository.findByCreatedAtBetween(
-                start,
-                end
-        );
+        return taskRepository.findByCreatedAtBetweenOrderByCreatedAtDesc(start, end);
     }
 
     private boolean containsKeyword(Task task, String keyword) {
@@ -140,27 +135,9 @@ public class TaskService {
         return false;
     }
 
-    public List<Task> findTasksByKeywords(Set<String> keywords) {
-        if (keywords == null || keywords.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        return taskRepository.findAll().stream()
-                .filter(task -> keywords.stream().anyMatch(keyword -> containsKeyword(task, keyword)))
-                .collect(Collectors.toList());
-    }
-
     // Tag operations
     public List<Tag> getAllTags() {
         return tagRepository.findAll();
-    }
-
-    public List<Task> findTasksByTag(String tagName) {
-        if (tagName == null || tagName.trim().isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        return taskRepository.findByTagName(tagName.trim());
     }
 
     public List<Task> findTasksByTagId(Long tagId) {
@@ -176,7 +153,7 @@ public class TaskService {
             return Collections.emptyList();
         }
 
-        return taskRepository.findByTagsIdIn(tagIds);
+        return taskRepository.findByTagsIdInOrderByCreatedAtDesc(tagIds);
     }
 
     @Transactional
