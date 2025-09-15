@@ -143,175 +143,77 @@
                 <span th:if="${searchKeyword != null or (selectedTagIds != null and not #lists.isEmpty(selectedTagIds)) or dateFilter != null}">Результаты поиска</span>
                 <span th:if="${not (searchKeyword != null or (selectedTagIds != null and not #lists.isEmpty(selectedTagIds)) or dateFilter != null)}">Текущие задачи</span>
                 <span class="badge bg-primary ms-2" th:text="${activeTasks.size()}"></span>
+                <button class="btn btn-sm btn-outline-secondary toggle-section-btn" data-bs-target=".active-tasks-container">
+                    <i class="fa-solid fa-chevron-up collapse-icon"></i>
+                </button>
             </h5>
 
-            <div th:if="${#lists.isEmpty(activeTasks)}" class="alert alert-info">
-                <i class="fas fa-info-circle me-2"></i>
-                <span th:if="${searchKeyword != null or (selectedTagIds != null and not #lists.isEmpty(selectedTagIds)) or dateFilter != null}">
+            <div class="active-tasks-container">
+                <div th:if="${#lists.isEmpty(activeTasks)}" class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <span th:if="${searchKeyword != null or (selectedTagIds != null and not #lists.isEmpty(selectedTagIds)) or dateFilter != null}">
                         По вашему запросу ничего не найдено
                     </span>
-                <span th:if="${not (searchKeyword != null or (selectedTagIds != null and not #lists.isEmpty(selectedTagIds)) or dateFilter != null)}">
+                    <span th:if="${not (searchKeyword != null or (selectedTagIds != null and not #lists.isEmpty(selectedTagIds)) or dateFilter != null)}">
                         Нет активных задач. Создайте первую задачу!
                     </span>
-            </div>
-
-            <!-- Карточки задач -->
-            <div th:each="task : ${activeTasks}" class="task-card"
-                 th:classappend="'priority-' + ${task.priority?.toString().toLowerCase()}">
-
-                <div class="card">
-                    <!-- Заголовок задачи -->
-                    <div class="card-header">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="flex-grow-1">
-                                <h6 class="mb-0">
-                                    <a th:href="@{/tasks/{id}(id=${task.customId})}"
-                                       class="text-decoration-none text-dark fw-bold"
-                                       th:text="${task.customId + ': ' + task.title}"></a>
-
-                                    <!-- Статус -->
-                                    <span th:if="${task.status == T(org.shetsko.model.enums.TaskStatus).COMPLETED}"
-                                          class="badge bg-success ms-2">
-                                            <i class="fas fa-check"></i>
-                                        </span>
-                                </h6>
-                            </div>
-
-                            <div class="d-flex align-items-center task-actions">
-                                <!-- Теги -->
-                                <span th:each="tag : ${task.tags}" class="badge me-1"
-                                      th:style="'background-color: ' + ${tag.color} + '; color: white'"
-                                      th:text="${tag.name}"></span>
-
-                                <!-- Кнопка комментариев -->
-                                <button class="btn btn-sm btn-outline-secondary ms-2 comments-btn"
-                                        th:attr="data-task-id=${task.customId}"
-                                        th:classappend="${#lists.size(task.comments) > 0} ? 'has-comments' : ''">
-                                    <i class="fas fa-comment"></i>
-                                    <span th:if="${#lists.size(task.comments) > 0}"
-                                          class="ms-1" th:text="${#lists.size(task.comments)}"></span>
-                                </button>
-
-                                <form th:action="@{'/tasks/delete/' + ${task.customId}}" method="post" class="ms-2">
-                                    <button type="submit" class="btn btn-sm btn-danger">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
-
-                                <!-- Кнопка завершения -->
-                                <form th:if="${task.status != T(org.shetsko.model.enums.TaskStatus).COMPLETED}"
-                                      th:action="@{/tasks/{id}/complete(id=${task.customId})}"
-                                      method="post" class="ms-2">
-                                    <button type="submit" class="btn btn-sm btn-success">
-                                        <i class="fas fa-check"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Описание задачи -->
-                    <div class="card-body collapse description-section">
-                        <!-- Описание -->
-                        <div class="mb-2">
-                                <span class="card-text">
-                                    <th:block th:each="part : ${keywordService.highlightKeywords(task.description)}">
-                                        <th:block th:utext="${part}"></th:block>
-                                    </th:block>
-                                </span>
-                        </div>
-
-                        <!-- Ключевые слова -->
-                        <div th:if="${not #sets.isEmpty(keywordService.findKeywordsInTask(task))}" class="mb-3">
-                            <span class="fw-bold text-muted me-2">Ключевые слова:</span>
-                            <div class="d-flex flex-wrap gap-1">
-                                <th:block th:each="keyword : ${keywordService.findKeywordsInTask(task)}">
-                                    <span class="keyword-badge position-relative"
-                                    th:attr="data-keyword=${keyword}">
-                                        <span th:text="${keyword}"></span>
-                                            <span class="keyword-source-tooltip">
-                                            <i class="fas fa-info-circle ms-1"></i>
-                                                    <span class="keyword-source-content">
-                                                    <strong th:text="${keyword}"></strong><br>
-                                                    <span th:text="'Найдено в этой задаче'"></span>
-                                                    </span>
-                                            </span>
-                                    </span>
-                                </th:block>
-                            </div>
-                        </div>
-
-                        <!-- Комментарии -->
-                        <div class="comments-container collapse mt-3">
-                            <small class="text-muted d-block mb-2">Комментарии:</small>
-                            <div th:each="comment : ${task.comments}" class="card mb-2">
-                                <div class="card-body p-2">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <p class="card-text mb-0 small" th:text="${comment.content}"></p>
-                                        <small class="text-muted">
-                                            <i class="far fa-clock me-1"></i>
-                                            <span th:text="${#temporals.format(comment.createdAt, 'dd.MM.yy HH:mm')}"></span>
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Футер карточки -->
-                        <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
-                            <small class="text-muted">
-                                <i class="far fa-calendar me-1"></i>
-                                <span th:text="${#temporals.format(task.createdAt, 'dd.MM.yy HH:mm')}"></span>
-                            </small>
-
-                            <small th:classappend="${task.priority == T(org.shetsko.model.enums.Priority).HIGH} ? 'text-danger' :
-                                                      (${task.priority == T(org.shetsko.model.enums.Priority).MEDIUM} ? 'text-warning' : 'text-success')">
-                                <i class="fas fa-flag me-1"></i>
-                                <span th:text="${task.priority.getTranslate()}"></span>
-                            </small>
-                        </div>
-                    </div>
                 </div>
-            </div>
 
-            <!-- Выполненные задачи -->
-            <div th:if="${not #lists.isEmpty(completedTasks)}" class="mt-4">
-                <h5 class="mb-3 fw-bold text-dark">
-                    <i class="fas fa-check-circle me-2"></i>Выполненные задачи
-                    <span class="badge bg-success ms-2" th:text="${completedTasks.size()}"></span>
-                </h5>
-
-                <div th:each="task : ${completedTasks}" class="task-card completed"
+                <!-- Карточки задач -->
+                <div th:each="task : ${activeTasks}" class="task-card"
                      th:classappend="'priority-' + ${task.priority?.toString().toLowerCase()}">
+
                     <div class="card">
+                        <!-- Заголовок задачи -->
                         <div class="card-header">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="flex-grow-1">
                                     <h6 class="mb-0">
                                         <a th:href="@{/tasks/{id}(id=${task.customId})}"
-                                           class="text-decoration-none text-muted fw-bold text-decoration-line-through"
+                                           class="text-decoration-none text-dark fw-bold"
                                            th:text="${task.customId + ': ' + task.title}"></a>
-                                        <span class="badge bg-success ms-2">Выполнено</span>
+
+                                        <!-- Статус -->
+                                        <span th:if="${task.status == T(org.shetsko.model.enums.TaskStatus).COMPLETED}"
+                                              class="badge bg-success ms-2">
+                                            <i class="fas fa-check"></i>
+                                        </span>
                                     </h6>
                                 </div>
-                                <div class="d-flex align-items-center">
-                                        <span th:each="tag : ${task.tags}" class="badge me-1"
-                                              th:style="'background-color: ' + ${tag.color} + '; color: white'"
-                                              th:text="${tag.name}"></span>
+
+                                <div class="d-flex align-items-center task-actions">
+                                    <!-- Теги -->
+                                    <span th:each="tag : ${task.tags}" class="badge me-1"
+                                          th:style="'background-color: ' + ${tag.color} + '; color: white'"
+                                          th:text="${tag.name}"></span>
+
+                                    <!-- Кнопка комментариев -->
                                     <button class="btn btn-sm btn-outline-secondary ms-2 comments-btn"
-                                            th:attr="data-task-id=${task.customId}">
+                                            th:attr="data-task-id=${task.customId}"
+                                            th:classappend="${#lists.size(task.comments) > 0} ? 'has-comments' : ''">
                                         <i class="fas fa-comment"></i>
                                         <span th:if="${#lists.size(task.comments) > 0}"
                                               class="ms-1" th:text="${#lists.size(task.comments)}"></span>
                                     </button>
+
+                                    <form th:action="@{'/tasks/delete/' + ${task.customId}}" method="post" class="ms-2">
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+
+                                    <!-- Кнопка завершения -->
+                                    <form th:if="${task.status != T(org.shetsko.model.enums.TaskStatus).COMPLETED}"
+                                          th:action="@{/tasks/{id}/complete(id=${task.customId})}"
+                                          method="post" class="ms-2">
+                                        <button type="submit" class="btn btn-sm btn-success">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </form>
                                 </div>
-                                <form th:action="@{'/tasks/delete/' + ${task.customId}}" method="post" class="ms-2">
-                                    <button type="submit" class="btn btn-sm btn-danger">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
                             </div>
                         </div>
+
                         <!-- Описание задачи -->
                         <div class="card-body collapse description-section">
                             <!-- Описание -->
@@ -375,6 +277,115 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+
+            <!-- Выполненные задачи -->
+            <div th:if="${not #lists.isEmpty(completedTasks)}" class="mt-4">
+                <h5 class="mb-3 fw-bold text-dark">
+                    <i class="fas fa-check-circle me-2"></i>Выполненные задачи
+                    <span class="badge bg-success ms-2" th:text="${completedTasks.size()}"></span>
+                    <button class="btn btn-sm btn-outline-secondary toggle-section-btn" data-bs-target=".completed-tasks-container">
+                        <i class="fa-solid fa-chevron-up collapse-icon"></i>
+                    </button>
+                </h5>
+                <div class="completed-tasks-container">
+                    <div th:each="task : ${completedTasks}" class="task-card completed"
+                         th:classappend="'priority-' + ${task.priority?.toString().toLowerCase()}">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-0">
+                                            <a th:href="@{/tasks/{id}(id=${task.customId})}"
+                                               class="text-decoration-none text-muted fw-bold text-decoration-line-through"
+                                               th:text="${task.customId + ': ' + task.title}"></a>
+                                            <span class="badge bg-success ms-2">Выполнено</span>
+                                        </h6>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <span th:each="tag : ${task.tags}" class="badge me-1"
+                                              th:style="'background-color: ' + ${tag.color} + '; color: white'"
+                                              th:text="${tag.name}"></span>
+                                        <button class="btn btn-sm btn-outline-secondary ms-2 comments-btn"
+                                                th:attr="data-task-id=${task.customId}">
+                                            <i class="fas fa-comment"></i>
+                                            <span th:if="${#lists.size(task.comments) > 0}"
+                                                  class="ms-1" th:text="${#lists.size(task.comments)}"></span>
+                                        </button>
+                                    </div>
+                                    <form th:action="@{'/tasks/delete/' + ${task.customId}}" method="post" class="ms-2">
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            <!-- Описание задачи -->
+                            <div class="card-body collapse description-section">
+                                <!-- Описание -->
+                                <div class="mb-2">
+                                <span class="card-text">
+                                    <th:block th:each="part : ${keywordService.highlightKeywords(task.description)}">
+                                        <th:block th:utext="${part}"></th:block>
+                                    </th:block>
+                                </span>
+                                </div>
+
+                                <!-- Ключевые слова -->
+                                <div th:if="${not #sets.isEmpty(keywordService.findKeywordsInTask(task))}" class="mb-3">
+                                    <span class="fw-bold text-muted me-2">Ключевые слова:</span>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        <th:block th:each="keyword : ${keywordService.findKeywordsInTask(task)}">
+                                    <span class="keyword-badge position-relative"
+                                          th:attr="data-keyword=${keyword}">
+                                        <span th:text="${keyword}"></span>
+                                            <span class="keyword-source-tooltip">
+                                            <i class="fas fa-info-circle ms-1"></i>
+                                                    <span class="keyword-source-content">
+                                                    <strong th:text="${keyword}"></strong><br>
+                                                    <span th:text="'Найдено в этой задаче'"></span>
+                                                    </span>
+                                            </span>
+                                    </span>
+                                        </th:block>
+                                    </div>
+                                </div>
+
+                                <!-- Комментарии -->
+                                <div class="comments-container collapse mt-3">
+                                    <small class="text-muted d-block mb-2">Комментарии:</small>
+                                    <div th:each="comment : ${task.comments}" class="card mb-2">
+                                        <div class="card-body p-2">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <p class="card-text mb-0 small" th:text="${comment.content}"></p>
+                                                <small class="text-muted">
+                                                    <i class="far fa-clock me-1"></i>
+                                                    <span th:text="${#temporals.format(comment.createdAt, 'dd.MM.yy HH:mm')}"></span>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Футер карточки -->
+                                <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                                    <small class="text-muted">
+                                        <i class="far fa-calendar me-1"></i>
+                                        <span th:text="${#temporals.format(task.createdAt, 'dd.MM.yy HH:mm')}"></span>
+                                    </small>
+
+                                    <small th:classappend="${task.priority == T(org.shetsko.model.enums.Priority).HIGH} ? 'text-danger' :
+                                                      (${task.priority == T(org.shetsko.model.enums.Priority).MEDIUM} ? 'text-warning' : 'text-success')">
+                                        <i class="fas fa-flag me-1"></i>
+                                        <span th:text="${task.priority.getTranslate()}"></span>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -476,5 +487,6 @@
 <script src="/js/highlight-keywords.js"></script>
 <script src="/js/search-task-collapse.js"></script>
 <script src="/js/task-drop-down.js"></script>
+<script src="/js/task-collapse.js"></script>
 </body>
 </html>

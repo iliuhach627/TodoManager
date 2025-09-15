@@ -43,3 +43,16 @@
 .priority-high { border-left: 3px solid #dc3545; }
 .priority-medium { border-left: 3px solid #ffc107; }
 .priority-low { border-left: 3px solid #28a745; }
+
+.active-tasks-container,
+.completed-tasks-container {
+    transition: all 0.3s ease;
+}
+
+.toggle-section-btn {
+    transition: all 0.2s ease;
+}
+
+.toggle-section-btn:hover {
+    transform: scale(1.05);
+}
