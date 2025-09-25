@@ -14,7 +14,6 @@
     <groupId>io.github.iliuhach627</groupId>
     <artifactId>todo-manager</artifactId>
     <version>1.0.0</version>
-    <description>For Ksenia</description>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
