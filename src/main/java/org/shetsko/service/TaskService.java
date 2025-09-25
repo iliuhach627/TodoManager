@@ -12,10 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -96,43 +93,11 @@ public class TaskService {
         }
 
         String searchTerm = keyword.toLowerCase().trim();
-        return taskRepository.findByKeywordOrderByCreatedAtDesc(keyword.trim());
+        return taskRepository.findByKeywordOrderByCreatedAtDesc(searchTerm);
     }
 
     public List<Task> findTasksByCreatedAndBetween(LocalDateTime start, LocalDateTime end) {
         return taskRepository.findByCreatedAtBetweenOrderByCreatedAtDesc(start, end);
-    }
-
-    private boolean containsKeyword(Task task, String keyword) {
-        // Поиск в заголовке
-        if (task.getCustomId() != null && task.getCustomId().contains(keyword)) {
-            return true;
-        }
-
-        if (task.getTitle() != null && task.getTitle().toLowerCase().contains(keyword)) {
-            return true;
-        }
-
-        // Поиск в описании
-        if (task.getDescription() != null && task.getDescription().toLowerCase().contains(keyword)) {
-            return true;
-        }
-
-        // Поиск в комментариях
-        if (task.getComments() != null) {
-            return task.getComments().stream()
-                    .anyMatch(comment -> comment.getContent() != null &&
-                            comment.getContent().toLowerCase().contains(keyword));
-        }
-
-        // Поиск в тегах
-        if (task.getTags() != null) {
-            return task.getTags().stream()
-                    .anyMatch(tag -> tag.getName() != null &&
-                            tag.getName().toLowerCase().contains(keyword));
-        }
-
-        return false;
     }
 
     // Tag operations
@@ -236,18 +201,51 @@ public class TaskService {
         commentRepository.deleteById(commentId);
     }
 
-    // Reference operations
+    public List<Task> getReferencedTasks(String customId) {
+        Task task = getTaskByCustomId(customId);
+        return new ArrayList<>(task.getReferencedTasks());
+    }
+
+    public List<Task> getReferencingTasks(String customId) {
+        Task task = getTaskByCustomId(customId);
+        return new ArrayList<>(task.getReferencingTasks());
+    }
+
+    @Transactional
     public Task addReference(String customId, String referencedTaskId) {
+        if (customId.equals(referencedTaskId)) {
+            throw new IllegalArgumentException("Задача не может ссылаться на саму себя");
+        }
+
         Task task = getTaskByCustomId(customId);
         Task referencedTask = getTaskByCustomId(referencedTaskId);
+
+        // Проверяем, нет ли уже такой связи
+        if (task.getReferencedTasks().contains(referencedTask)) {
+            throw new IllegalArgumentException("Связь между задачами уже существует");
+        }
 
         task.getReferencedTasks().add(referencedTask);
         return taskRepository.save(task);
     }
 
+    @Transactional
     public void removeReference(String customId, String referencedTaskId) {
         Task task = getTaskByCustomId(customId);
-        task.getReferencedTasks().removeIf(t -> t.getCustomId().equals(referencedTaskId));
+        Task referencedTask = getTaskByCustomId(referencedTaskId);
+
+        task.getReferencedTasks().remove(referencedTask);
         taskRepository.save(task);
     }
+
+    public List<Task> findTasksForReference(String customId, String searchTerm) {
+        List<Task> allTasks = taskRepository.findAllOrderByCreatedAtDesc();
+
+        return allTasks.stream()
+                .filter(task -> !task.getCustomId().equals(customId)) // Исключаем текущую задачу
+                .filter(task -> task.getTitle().toLowerCase().contains(searchTerm.toLowerCase()) ||
+                        task.getCustomId().contains(searchTerm))
+                .collect(Collectors.toList());
+    }
+
 }

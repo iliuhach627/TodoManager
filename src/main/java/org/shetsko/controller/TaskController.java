@@ -10,6 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -70,8 +71,12 @@ public class TaskController {
 
         // Ищем ключевые слова во всех полях задачи
         Map<String, List<String>> keywordsWithSource = keywordService.findKeywordsWithSource(task);
+        // Добавляем все задачи для автодополнения
+        List<Task> allTasks = taskService.getAllTasks();
+
 
         model.addAttribute("task", task);
+        model.addAttribute("allTasks", allTasks);
         model.addAttribute("newComment", new Comment());
         model.addAttribute("keywords", keywordsWithSource.keySet());
         model.addAttribute("keywordsWithSource", keywordsWithSource);
@@ -106,7 +111,7 @@ public class TaskController {
     public String completeTask(@PathVariable String customId) {
         Task task = taskService.getTaskByCustomId(customId);
         taskService.completeTask(task);
-        return "redirect:/tasks";
+        return "redirect:/tasks/" + customId;
     }
 
     @PostMapping("/tags/create")
@@ -234,7 +239,24 @@ public class TaskController {
     @GetMapping("/filter/date/custom")
     public String filterTasksByDateRange(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
                                          @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
-                                         Model model) {
+                                         Model model, RedirectAttributes redirectAttributes) {
+
+        // Валидация дат
+        if (startDate == null || endDate == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Необходимо указать обе даты");
+            return "redirect:/tasks";
+        }
+
+        if (startDate.isAfter(endDate)) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Начальная дата не может быть больше конечной");
+            return "redirect:/tasks";
+        }
+
+        // Ограничение на максимальный диапазон (например, 1 год)
+        if (startDate.until(endDate).getDays() > 365) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Максимальный диапазон - 1 год");
+            return "redirect:/tasks";
+        }
 
         if (startDate == null) startDate = LocalDate.now().minusMonths(1);
         if (endDate == null) endDate = LocalDate.now();
@@ -323,6 +345,65 @@ public class TaskController {
 
         return "tasks/list";
     }
+
+    @GetMapping("/{customId}/references")
+    public String getTaskReferences(@PathVariable String customId, Model model) {
+        Task task = taskService.getTask(customId)
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
+
+        List<Task> referencedTasks = taskService.getReferencedTasks(customId);
+        List<Task> referencingTasks = taskService.getReferencingTasks(customId);
+
+        model.addAttribute("task", task);
+        model.addAttribute("referencedTasks", referencedTasks);
+        model.addAttribute("referencingTasks", referencingTasks);
+        model.addAttribute("newComment", new Comment());
+
+        return "tasks/references";
+    }
+
+    @PostMapping("/{customId}/references/add")
+    public String addReference(@PathVariable String customId,
+                               @RequestParam String referencedTaskId,
+                               RedirectAttributes redirectAttributes) {
+        try {
+            taskService.addReference(customId, referencedTaskId);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Связь с задачей " + referencedTaskId + " добавлена");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/tasks/" + customId;
+    }
+
+    @PostMapping("/{customId}/references/remove")
+    public String removeReference(@PathVariable String customId,
+                                  @RequestParam String referencedTaskId,
+                                  RedirectAttributes redirectAttributes) {
+        try {
+            taskService.removeReference(customId, referencedTaskId);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Связь с задачей " + referencedTaskId + " удалена");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/tasks/" + customId;
+    }
+
+    @GetMapping("/{customId}/references/search")
+    @ResponseBody
+    public List<Map<String, String>> searchTasksForReference(@PathVariable String customId,
+                                                             @RequestParam String q) {
+        return taskService.findTasksForReference(customId, q).stream()
+                .map(task -> {
+                    Map<String, String> result = new HashMap<>();
+                    result.put("id", task.getCustomId());
+                    result.put("text", task.getCustomId() + ": " + task.getTitle());
+                    return result;
+                })
+                .collect(Collectors.toList());
+    }
+
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public String handleNotFound(ResourceNotFoundException ex, Model model) {

@@ -77,21 +77,31 @@
                                         <i class="fas fa-calendar me-1"></i>Дата
                                     </button>
                                     <ul class="dropdown-menu p-3" style="min-width: 300px;">
-                                        <li><a class="dropdown-item" th:href="@{/tasks/filter/date?dateRange=today}">Сегодня</a></li>
-                                        <li><a class="dropdown-item" th:href="@{/tasks/filter/date?dateRange=week}">Неделя</a></li>
-                                        <li><a class="dropdown-item" th:href="@{/tasks/filter/date?dateRange=month}">Месяц</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="dateFilter.setQuickRange('today')">Сегодня</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="dateFilter.setQuickRange('week')">Неделя</a></li>
+                                        <li><a class="dropdown-item" href="#" onclick="dateFilter.setQuickRange('month')">Месяц</a></li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li>
                                             <form th:action="@{/tasks/filter/date/custom}" method="get" class="date-range-form">
-                                                <div class="mb-2" style="display: flex; align-items: center;">
+                                                <div class="mb-2">
+                                                    <label class="form-label small text-muted mb-1">Начальная дата *</label>
                                                     <input id="startDate" type="date" name="startDate" class="form-control form-control-sm"
-                                                           th:value="${startDate}">–
+                                                           th:value="${startDate}">
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label class="form-label small text-muted mb-1">Конечная дата *</label>
                                                     <input id="endDate" type="date" name="endDate" class="form-control form-control-sm"
                                                            th:value="${endDate}">
                                                 </div>
-                                                <button id="findTasksByDate" type="submit" class="btn btn-primary btn-sm w-100">
+                                                <button id="findTasksByDate" type="submit" class="btn btn-primary btn-sm w-100" disabled>
                                                     <i class="fas fa-filter me-1"></i>Применить
                                                 </button>
+                                                <div class="mt-2">
+                                                    <button type="button" class="btn btn-outline-secondary btn-sm w-100"
+                                                            onclick="dateFilter.clearFilters()">
+                                                        <i class="fas fa-eraser me-1"></i>Очистить
+                                                    </button>
+                                                </div>
                                             </form>
                                         </li>
                                     </ul>
@@ -99,9 +109,12 @@
                             </div>
                             <!-- Кнопка сброса -->
                             <div class="col-md-2">
-                                <a th:href="@{/tasks}" class="btn btn-outline-danger btn-sm w-100">
-                                    <i class="fas fa-times"></i> Сброс
-                                </a>
+                                <form th:action="@{/tasks}" method="get">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                                        <i class="fas fa-times"></i> Сброс
+                                    </button>
+                                </form>
+
                             </div>
                         </div>
                     </div>
@@ -143,7 +156,8 @@
                 <span th:if="${searchKeyword != null or (selectedTagIds != null and not #lists.isEmpty(selectedTagIds)) or dateFilter != null}">Результаты поиска</span>
                 <span th:if="${not (searchKeyword != null or (selectedTagIds != null and not #lists.isEmpty(selectedTagIds)) or dateFilter != null)}">Текущие задачи</span>
                 <span class="badge bg-primary ms-2" th:text="${activeTasks.size()}"></span>
-                <button class="btn btn-sm btn-outline-secondary toggle-section-btn" data-bs-target=".active-tasks-container">
+                <button class="btn btn-sm btn-outline-secondary toggle-section-btn"
+                        data-bs-target=".active-tasks-container">
                     <i class="fa-solid fa-chevron-up collapse-icon"></i>
                 </button>
             </h5>
@@ -227,7 +241,7 @@
 
                             <!-- Ключевые слова -->
                             <div th:if="${not #sets.isEmpty(keywordService.findKeywordsInTask(task))}" class="mb-3">
-                                <span class="fw-bold text-muted me-2">Ключевые слова:</span>
+                                <span class="text-muted me-2">Ключевые слова:</span>
                                 <div class="d-flex flex-wrap gap-1">
                                     <th:block th:each="keyword : ${keywordService.findKeywordsInTask(task)}">
                                     <span class="keyword-badge position-relative"
@@ -242,6 +256,19 @@
                                             </span>
                                     </span>
                                     </th:block>
+                                </div>
+                            </div>
+
+                            <!-- Ссылки на связанные задачи -->
+                            <div th:if="${not #sets.isEmpty(task.referencedTasks)}" class="mt-2">
+                                <small class="text-muted">Связанные задачи:</small>
+                                <div class="d-flex flex-wrap gap-1">
+                                        <span th:each="refTask : ${task.referencedTasks}"
+                                              class="badge bg-light text-dark border">
+                                            <a th:href="@{/tasks/{id}(id=${refTask.customId})}"
+                                               class="text-decoration-none text-dark"
+                                               th:text="${refTask.customId}"></a>
+                                        </span>
                                 </div>
                             </div>
 
@@ -285,7 +312,8 @@
                 <h5 class="mb-3 fw-bold text-dark">
                     <i class="fas fa-check-circle me-2"></i>Выполненные задачи
                     <span class="badge bg-success ms-2" th:text="${completedTasks.size()}"></span>
-                    <button class="btn btn-sm btn-outline-secondary toggle-section-btn" data-bs-target=".completed-tasks-container">
+                    <button class="btn btn-sm btn-outline-secondary toggle-section-btn"
+                            data-bs-target=".completed-tasks-container">
                         <i class="fa-solid fa-chevron-up collapse-icon"></i>
                     </button>
                 </h5>
@@ -488,5 +516,6 @@
 <script src="/js/search-task-collapse.js"></script>
 <script src="/js/task-drop-down.js"></script>
 <script src="/js/task-collapse.js"></script>
+<script src="/js/task-references.js"></script>
 </body>
 </html>

@@ -56,6 +56,9 @@ public class Task {
     )
     private Set<Task> referencedTasks = new HashSet<>();
 
+    @ManyToMany(mappedBy = "referencedTasks")
+    private Set<Task> referencingTasks = new HashSet<>();
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 

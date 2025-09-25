@@ -17,10 +17,6 @@ import java.util.Optional;
 public interface TaskRepository extends JpaRepository<Task, Long> {
     Optional<Task> findByCustomId(String customId);
 
-    @Query("SELECT t FROM Task t WHERE t.createdAt BETWEEN :start AND :end ORDER BY t.createdAt DESC")
-    List<Task> findByCreatedAtBetween(@Param("start") LocalDateTime start,
-                                      @Param("end") LocalDateTime end);
-
     // Активные задачи - новые сверху
     @Query("SELECT t FROM Task t WHERE t.status != 'COMPLETED' ORDER BY t.createdAt DESC")
     List<Task> findActiveTasksOrderByCreatedAtDesc();
@@ -34,7 +30,10 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findAllOrderByCreatedAtDesc();
 
     // Поиск с сортировкой - новые сверху
-    @Query("SELECT t FROM Task t WHERE LOWER(t.description) LIKE LOWER(CONCAT('%', :keyword, '%')) ORDER BY t.createdAt DESC")
+    @Query("SELECT DISTINCT t FROM Task t JOIN t.comments c WHERE LOWER(t.title) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(t.description) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(t.customId) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
+            "LOWER(c.content) LIKE LOWER(CONCAT('%', :keyword, '%')) ORDER BY t.createdAt DESC")
     List<Task> findByKeywordOrderByCreatedAtDesc(@Param("keyword") String keyword);
 
     // Фильтр по тегам с сортировкой - новые сверху
@@ -59,4 +58,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @Query("SELECT DISTINCT t FROM Task t JOIN t.tags tag WHERE LOWER(tag.name) LIKE LOWER(CONCAT('%', :tagName, '%'))")
     List<Task> findByTagName(@Param("tagName") String tagName);
+
+    @Query("SELECT t FROM Task t WHERE t.customId != :excludeId ORDER BY t.createdAt DESC")
+    List<Task> findAllExcludingTask(@Param("excludeId") String excludeId);
+
 }
