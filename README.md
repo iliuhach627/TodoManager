@@ -90,7 +90,7 @@ TodoManager/
 │ │ └── example/
 │ │ └── todomanager/
 │ │ ├── controller/ # Контроллеры (TaskController)
-│ │ ├── model/ # Модели (Task, Category)
+│ │ ├── model/ # Модели (Task, Tag, Comment, Keyword)
 │ │ ├── repository/ # Репозитории (JPA)
 │ │ ├── service/ # Сервисный слой
 │ │ └── TodoManagerApplication.java
