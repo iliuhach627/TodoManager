@@ -1,15 +1,17 @@
 package org.shetsko.service;
 
 import org.shetsko.repository.TaskRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 
 @Service
 public class TaskIdGenerator {
-    @Autowired
-    private TaskRepository taskRepository;
+    private final TaskRepository taskRepository;
+
+    public TaskIdGenerator(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
+    }
 
     public String generateTaskId() {
         LocalDate today = LocalDate.now();

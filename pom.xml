@@ -11,9 +11,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
-    <groupId>org.shetsko</groupId>
-    <artifactId>ToDo</artifactId>
-    <version>1.0</version>
+    <groupId>io.github.iliuhach627</groupId>
+    <artifactId>todo-manager</artifactId>
+    <version>1.0.0</version>
     <description>For Ksenia</description>
 
     <properties>
@@ -21,6 +21,14 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>Github Packages</name>
+            <url>https://maven.pkg.github.com/iliuhach627/TodoManager</url>
+        </repository>
+    </distributionManagement>
 
     <dependencies>
         <dependency>
