@@ -2,7 +2,7 @@
 
 [![Java](https://img.shields.io/badge/Java-17-%23ED8B00?logo=openjdk)](https://openjdk.org/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.1.5-%236DB33F?logo=springboot)](https://spring.io/projects/spring-boot)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-%23336791?logo=postgresql)](https://www.postgresql.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-%23336791?logo=postgresql)](https://www.postgresql.org/)
 [![Hibernate](https://img.shields.io/badge/Hibernate-6.3-%2359666C?logo=hibernate)](https://hibernate.org/)
 [![Thymeleaf](https://img.shields.io/badge/Thymeleaf-3.1-%23005F0F?logo=thymeleaf)](https://www.thymeleaf.org/)
 [![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3-%237952B3?logo=bootstrap)](https://getbootstrap.com/)
